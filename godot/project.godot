@@ -1,0 +1,26 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="GodotWithBevy"
+run/main_scene="uid://csp0xcvdw4bgh"
+config/features=PackedStringArray("4.4", "Mobile")
+config/icon="res://icon.svg"
+
+[autoload]
+
+BevyAppSingleton="*res://bevy_app_singleton.tscn"
+UI="*res://ui.tscn"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720

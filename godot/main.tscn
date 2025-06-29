@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://csp0xcvdw4bgh"]
+
+[ext_resource type="PackedScene" uid="uid://do3ghj5teyc57" path="res://card/card.tscn" id="1_ig7tw"]
+
+[node name="Main" type="Node2D"]
+
+[node name="Card" parent="." node_paths=PackedStringArray("follow_target") instance=ExtResource("1_ig7tw")]
+follow_target = NodePath("../Control")
+offset_left = 152.199
+offset_top = 146.747
+offset_right = 392.199
+offset_bottom = 486.747
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
