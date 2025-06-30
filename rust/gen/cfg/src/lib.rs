@@ -10,6 +10,7 @@
 pub mod prelude {
     pub use crate::*;
     pub use crate::item::*;
+    pub use crate::card::*;
     pub use crate::test::*;
 }
 
@@ -36,12 +37,16 @@ impl std::fmt::Display for LubanError {
 
 pub struct Tables{
     pub TbItem: std::sync::Arc<crate::item::TbItem>,
+    pub Tbtranslate: std::sync::Arc<crate::Tbtranslate>,
+    pub TbCardsInfo: std::sync::Arc<crate::card::TbCardsInfo>,
 }
 
 impl Tables {
     pub fn new<T: Fn(&str) -> Result<ByteBuf, LubanError>>(loader: T) -> Result<Tables, LubanError> {
         let mut tables =Tables{
             TbItem: crate::item::TbItem::new(loader("item_tbitem")?)?,
+            Tbtranslate: crate::Tbtranslate::new(loader("tbtranslate")?)?,
+            TbCardsInfo: crate::card::TbCardsInfo::new(loader("card_tbcardsinfo")?)?,
         };
         unsafe { tables.resolve_ref(); }
         Ok(tables)
@@ -49,12 +54,35 @@ impl Tables {
 
     unsafe fn resolve_ref(&mut self) {
         let mut b = Box::from_raw(self.TbItem.as_ref() as *const crate::item::TbItem as *mut crate::item::TbItem); b.as_mut().resolve_ref(self); let _ = Box::into_raw(b);
+        let mut b = Box::from_raw(self.Tbtranslate.as_ref() as *const crate::Tbtranslate as *mut crate::Tbtranslate); b.as_mut().resolve_ref(self); let _ = Box::into_raw(b);
+        let mut b = Box::from_raw(self.TbCardsInfo.as_ref() as *const crate::card::TbCardsInfo as *mut crate::card::TbCardsInfo); b.as_mut().resolve_ref(self); let _ = Box::into_raw(b);
     }
 }
 pub mod item;
+pub mod card;
 pub mod test;
 
 use luban_lib::*;
+
+#[derive(Debug)]
+pub struct translate {
+    pub key: String,
+    pub cn: String,
+}
+
+impl translate{
+    pub(crate) fn new(mut buf: &mut ByteBuf) -> Result<translate, LubanError> {
+        let key = buf.read_string();
+        let cn = buf.read_string();
+        
+        Ok(translate { key, cn, })
+    }    
+
+    pub(crate) unsafe fn resolve_ref(&mut self, tables: &Tables) {
+    }
+
+    pub const __ID__: i32 = 1052832078;
+}
 
 #[derive(Debug)]
 pub struct vector2 {
@@ -120,6 +148,46 @@ impl vector4{
     }
 
     pub const __ID__: i32 = 337790801;
+}
+
+
+#[derive(Debug)]
+pub struct Tbtranslate {
+    pub data_list: Vec<std::sync::Arc<crate::translate>>,
+    pub data_map: std::collections::HashMap<String, std::sync::Arc<crate::translate>>,
+}
+
+impl Tbtranslate {
+    pub(crate) fn new(mut buf: ByteBuf) -> Result<std::sync::Arc<Tbtranslate>, LubanError> {
+        let mut data_map: std::collections::HashMap<String, std::sync::Arc<crate::translate>> = Default::default();
+        let mut data_list: Vec<std::sync::Arc<crate::translate>> = vec![];
+
+        for x in (0..buf.read_size()).rev() {
+            let row = std::sync::Arc::new(crate::translate::new(&mut buf)?);
+            data_list.push(row.clone());
+            data_map.insert(row.key.clone(), row.clone());
+        }
+
+        Ok(std::sync::Arc::new(Tbtranslate { data_map, data_list }))
+    }
+
+    pub fn get(&self, key: &str) -> Option<std::sync::Arc<crate::translate>> {
+        self.data_map.get(key).map(|x| x.clone())
+    }
+    
+    pub(crate) unsafe fn resolve_ref(&mut self, tables: &Tables) {
+        self.data_list.iter_mut().for_each(|mut x| {
+           let mut b = Box::from_raw(x.as_ref() as *const crate::translate as *mut crate::translate); b.as_mut().resolve_ref(tables); let _ = Box::into_raw(b);
+        });
+    }
+}
+
+impl std::ops::Index<String> for Tbtranslate {
+    type Output = std::sync::Arc<crate::translate>;
+
+    fn index(&self, index: String) -> &Self::Output {
+        &self.data_map.get(&index).unwrap()
+    }
 }
 
 

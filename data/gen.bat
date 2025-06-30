@@ -12,9 +12,9 @@ dotnet %LUBAN_DLL% ^
     -x outputCodeDir=..\rust\gen ^
     -x outputDataDir=..\godot\data\bytes ^
     -x json.outputDataDir=%WORKSPACE%\json^
-    -x pathValidator.rootDir=..\godot
-@REM     -x l10n.provider=default ^
-@REM     -x l10n.textFile.path=*@%WORKSPACE%\DataTables\Datas\l10n\texts.json ^
-@REM     -x l10n.textFile.keyFieldName=key
+    -x pathValidator.rootDir=..\godot ^
+    -x l10n.provider=default ^
+    -x l10n.textFile.path=Sheet1@%WORKSPACE%\Datas\#translate.xlsx ^
+    -x l10n.textFile.keyFieldName=key
 
 pause

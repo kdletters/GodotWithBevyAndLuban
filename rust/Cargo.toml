@@ -9,7 +9,9 @@ crate-type = ["cdylib"]
 [dependencies]
 godot-bevy = { git = "https://github.com/bytemeadow/godot-bevy.git" }
 bevy = { version = "0.16.1", default-features = false }
-godot = "0.3.1"
+godot = { version = "0.3.1", features = []}
 cfg = { path = "gen/cfg" }
 lazy_static = "1.5.0"
 luban_lib = { path = "luban_lib" }
+rand = "0.8.5"
+tokio = { version = "1.45.1", features = ["full"]}

@@ -1,18 +1,63 @@
 [gd_scene load_steps=2 format=3 uid="uid://csp0xcvdw4bgh"]
 
-[ext_resource type="PackedScene" uid="uid://do3ghj5teyc57" path="res://card/card.tscn" id="1_ig7tw"]
+[ext_resource type="PackedScene" uid="uid://bbqcf62cightn" path="res://deck/deck.tscn" id="2_0xm2m"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Main" node_paths=PackedStringArray("deck_1", "deck_2", "deck_3", "draw_button")]
+deck_1 = NodePath("CanvasLayer/Control2/Deck")
+deck_2 = NodePath("CanvasLayer/Control2/Deck2")
+deck_3 = NodePath("CanvasLayer/Control2/Deck3")
+scene_dis_name = "我是傻逼"
+max_random_item_num = 5
+min_random_item_num = 2
+site_items = {
+"Cobalt": 100,
+"Cobalt_ore": 100,
+"Gold_ore": 100,
+"Ice": 100,
+"Iron": 100,
+"Iron_ore": 100,
+"Magnesium": 100,
+"Magnesium_ore": 100,
+"Nickel": 100,
+"Nickel_ore": 100,
+"Platinum_ore": 100,
+"Silicon": 100,
+"Silicon_ore": 100,
+"Silver_ore": 100,
+"Stone": 100,
+"Uranium_ore": 100
+}
+draw_button = NodePath("Button")
 
-[node name="Card" parent="." node_paths=PackedStringArray("follow_target") instance=ExtResource("1_ig7tw")]
-follow_target = NodePath("../Control")
-offset_left = 152.199
-offset_top = 146.747
-offset_right = 392.199
-offset_bottom = 486.747
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="Control" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Control2" type="VBoxContainer" parent="CanvasLayer"]
+layout_direction = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -420.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+
+[node name="Deck3" parent="CanvasLayer/Control2" instance=ExtResource("2_0xm2m")]
+custom_minimum_size = Vector2(1500, 360)
+layout_mode = 2
+
+[node name="Deck2" parent="CanvasLayer/Control2" instance=ExtResource("2_0xm2m")]
+custom_minimum_size = Vector2(1500, 360)
+layout_mode = 2
+
+[node name="Deck" parent="CanvasLayer/Control2" instance=ExtResource("2_0xm2m")]
+custom_minimum_size = Vector2(1500, 360)
+layout_mode = 2
+
+[node name="Button" type="Button" parent="."]
+offset_left = 5.0
+offset_top = 893.0
+offset_right = 181.0
+offset_bottom = 1023.0
+theme_override_font_sizes/font_size = 36
+text = "抽卡"
