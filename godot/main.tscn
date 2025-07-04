@@ -27,37 +27,33 @@ site_items = {
 "Stone": 100,
 "Uranium_ore": 100
 }
-draw_button = NodePath("Button")
+draw_button = NodePath("CanvasLayer/Button")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="Control2" type="VBoxContainer" parent="CanvasLayer"]
 layout_direction = 3
-anchors_preset = 15
-anchor_right = 1.0
+anchors_preset = -1
+anchor_right = 0.8
 anchor_bottom = 1.0
-offset_right = -420.0
-offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_vertical = 3
 
 [node name="Deck3" parent="CanvasLayer/Control2" instance=ExtResource("2_0xm2m")]
-custom_minimum_size = Vector2(1500, 360)
 layout_mode = 2
 
 [node name="Deck2" parent="CanvasLayer/Control2" instance=ExtResource("2_0xm2m")]
-custom_minimum_size = Vector2(1500, 360)
 layout_mode = 2
 
 [node name="Deck" parent="CanvasLayer/Control2" instance=ExtResource("2_0xm2m")]
-custom_minimum_size = Vector2(1500, 360)
 layout_mode = 2
 
-[node name="Button" type="Button" parent="."]
-offset_left = 5.0
-offset_top = 893.0
-offset_right = 181.0
-offset_bottom = 1023.0
+[node name="Button" type="Button" parent="CanvasLayer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -130.0
+offset_right = 176.0
+grow_vertical = 0
 theme_override_font_sizes/font_size = 36
 text = "抽卡"

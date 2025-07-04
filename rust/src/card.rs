@@ -63,8 +63,37 @@ impl Card {
 
     fn on_button_down(&mut self) {
         self.card_current_state = CardState::Dragging;
+
+        if let Some(follow_target) = &self.follow_target {
+            follow_target.clone().queue_free();
+        }
     }
     fn on_button_up(&mut self) {
+        let mouse_position = self.base().get_global_mouse_position();
+        let nodes = self
+            .base()
+            .get_tree()
+            .unwrap()
+            .get_nodes_in_group("CardDroppable");
+        let mut in_which_deck = None;
+        for node in nodes.iter_shared() {
+            let node = node.cast::<Control>();
+            if node.get_global_rect().contains_point(mouse_position) && node.is_visible() {
+                if let Ok(deck) = node.try_cast::<Deck>() {
+                    in_which_deck = Some(deck.clone());
+                    break;
+                }
+            }
+        }
+
+        if let Some(deck) = in_which_deck {
+            deck.clone().bind_mut().add_card(self.base_mut().clone().cast::<Card>());
+        } else {
+            if let Some(deck) = &self.pre_deck {
+                deck.clone().bind_mut().add_card(self.base_mut().clone().cast::<Card>());
+            }
+        }
+
         self.card_current_state = CardState::Following;
     }
 }

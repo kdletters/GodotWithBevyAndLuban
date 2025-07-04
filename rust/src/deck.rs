@@ -33,7 +33,7 @@ impl Deck {
     fn sort_by_position(a: &Gd<Card>, b: &Gd<Card>) -> std::cmp::Ordering {
         let a_x = &a.get_position().x;
         let b_x = &b.get_position().x;
-        a_x.total_cmp(b_x)
+        b_x.total_cmp(a_x)
     }
 
     pub fn add_card(&mut self, mut card: Gd<Card>) {
