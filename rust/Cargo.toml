@@ -12,6 +12,12 @@ bevy = { version = "0.16.1", default-features = false }
 godot = { version = "0.3.1", features = []}
 cfg = { path = "gen/cfg" }
 lazy_static = "1.5.0"
-luban_lib = { path = "luban_lib" }
-rand = "0.8.5"
+luban_lib = { path = "gen/luban_lib" }
+rand = "*"
 tokio = { version = "1.45.1", features = ["full"]}
+godot_tokio = "0.3.1"
+
+[features]
+godot-bevy = []
+bevy = []
+use-bevy = ["godot-bevy", "bevy"]

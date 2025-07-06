@@ -1,6 +1,7 @@
 static mut LANGUAGE: Language = Language::Chinese;
 
-enum Language {
+#[allow(unused)]
+pub enum Language {
     Chinese,
 }
 
@@ -17,30 +18,37 @@ pub fn lang(key: &str) -> String {
     }
 }
 
+#[allow(unused)]
 pub fn set_language(language: Language) {
     unsafe {
         LANGUAGE = language;
     }
 }
 
-#[macro_export]
-macro_rules! lang {
-    ($key:expr) => {{ $crate::translate::lang($key) }};
-}
-
 pub trait Localize {
     fn local(&self) -> String;
 }
 
-impl Localize for &'static str {
+impl Localize for &str {
     fn local(&self) -> String {
-        lang!(self)
+        lang(self)
     }
 }
 
+impl Localize for str {
+    fn local(&self) -> String {
+        lang(self)
+    }
+}
 
 impl Localize for &String {
     fn local(&self) -> String {
-        lang!(self)
+        lang(self)
+    }
+}
+
+impl Localize for String {
+    fn local(&self) -> String {
+        lang(self)
     }
 }

@@ -1,16 +1,12 @@
-#[macro_use]
 extern crate quote;
-
 use proc_macro::TokenStream;
-use proc_macro2;
-use quote::{format_ident, quote, ToTokens};
-use syn::{parse_macro_input, Data, DeriveInput};
+use quote::{format_ident, quote};
+use syn::{parse_macro_input, DeriveInput};
 
 #[proc_macro_derive(EnumFromNum)]
 pub fn enum_from_num(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let ty_name = &input.ident;
-
 
     let tokens = vec![
         format_ident!("i64"),
@@ -31,9 +27,9 @@ pub fn enum_from_num(input: TokenStream) -> TokenStream {
                 fn from(value: #tokens) -> Self {
                     (value as i32).into()
                 }
-            }            
+            }
         )*
     };
-    
+
     TokenStream::from(expanded)
 }

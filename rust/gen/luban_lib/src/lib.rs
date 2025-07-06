@@ -1,6 +1,3 @@
-use std::cell::UnsafeCell;
-use std::sync::Mutex;
-
 pub struct ByteBuf {
     pub reader_index: usize,
     pub writer_index: usize,
@@ -8,8 +5,6 @@ pub struct ByteBuf {
 }
 
 impl ByteBuf {
-    const MIN_CAPACITY: usize = 16;
-
     pub fn new(bytes: Vec<u8>) -> Self {
         ByteBuf {
             reader_index: 0,
@@ -75,7 +70,8 @@ impl ByteBuf {
 
         if h < 0xff {
             self.ensure_read(3);
-            let x = ((self.bytes[self.reader_index + 1] as i16) << 8) | (self.bytes[self.reader_index + 2] as i16);
+            let x = ((self.bytes[self.reader_index + 1] as i16) << 8)
+                | (self.bytes[self.reader_index + 2] as i16);
             self.reader_index += 3;
             return x;
         }
@@ -98,18 +94,26 @@ impl ByteBuf {
         }
         if h < 0xe0 {
             self.ensure_read(3);
-            let x = ((h & 0x1f) << 16) | ((self.bytes[self.reader_index + 1] as u32) << 8) | (self.bytes[self.reader_index + 2] as u32);
+            let x = ((h & 0x1f) << 16)
+                | ((self.bytes[self.reader_index + 1] as u32) << 8)
+                | (self.bytes[self.reader_index + 2] as u32);
             self.reader_index += 3;
             return x;
         }
         if h < 0xf0 {
             self.ensure_read(4);
-            let x = ((h & 0x0f) << 24) | ((self.bytes[self.reader_index + 1] as u32) << 16) | ((self.bytes[self.reader_index + 2] as u32) << 8) | (self.bytes[self.reader_index + 3] as u32);
+            let x = ((h & 0x0f) << 24)
+                | ((self.bytes[self.reader_index + 1] as u32) << 16)
+                | ((self.bytes[self.reader_index + 2] as u32) << 8)
+                | (self.bytes[self.reader_index + 3] as u32);
             self.reader_index += 4;
             return x;
         } else {
             self.ensure_read(5);
-            let x = ((self.bytes[self.reader_index + 1] as u32) << 24) | ((self.bytes[self.reader_index + 2] as u32) << 16) | ((self.bytes[self.reader_index + 3] as u32) << 8) | (self.bytes[self.reader_index + 4] as u32);
+            let x = ((self.bytes[self.reader_index + 1] as u32) << 24)
+                | ((self.bytes[self.reader_index + 2] as u32) << 16)
+                | ((self.bytes[self.reader_index + 3] as u32) << 8)
+                | (self.bytes[self.reader_index + 4] as u32);
             self.reader_index += 5;
             return x;
         }
@@ -134,47 +138,74 @@ impl ByteBuf {
         }
         if h < 0xe0 {
             self.ensure_read(3);
-            let x = (((h & 0x1f) as u64) << 16) | ((self.bytes[self.reader_index + 1] as u64) << 8) | (self.bytes[self.reader_index + 2] as u64);
+            let x = (((h & 0x1f) as u64) << 16)
+                | ((self.bytes[self.reader_index + 1] as u64) << 8)
+                | (self.bytes[self.reader_index + 2] as u64);
             self.reader_index += 3;
             return x;
         }
         if h < 0xf0 {
             self.ensure_read(4);
-            let x = (((h & 0x0f) as u64) << 24) | ((self.bytes[self.reader_index + 1] as u64) << 16) | ((self.bytes[self.reader_index + 2] as u64) << 8) | (self.bytes[self.reader_index + 3] as u64);
+            let x = (((h & 0x0f) as u64) << 24)
+                | ((self.bytes[self.reader_index + 1] as u64) << 16)
+                | ((self.bytes[self.reader_index + 2] as u64) << 8)
+                | (self.bytes[self.reader_index + 3] as u64);
             self.reader_index += 4;
             return x;
         }
         if h < 0xf8 {
             self.ensure_read(5);
-            let xl = ((self.bytes[self.reader_index + 1] as u64) << 24) | ((self.bytes[self.reader_index + 2] as u64) << 16) | ((self.bytes[self.reader_index + 3] as u64) << 8) | (self.bytes[self.reader_index + 4] as u64);
+            let xl = ((self.bytes[self.reader_index + 1] as u64) << 24)
+                | ((self.bytes[self.reader_index + 2] as u64) << 16)
+                | ((self.bytes[self.reader_index + 3] as u64) << 8)
+                | (self.bytes[self.reader_index + 4] as u64);
             let xh = (h & 0x07) as u64;
             self.reader_index += 5;
             return (xh << 32) | xl;
         }
         if h < 0xfc {
             self.ensure_read(6);
-            let xl = ((self.bytes[self.reader_index + 2] as u64) << 24) | ((self.bytes[self.reader_index + 3] as u64) << 16) | ((self.bytes[self.reader_index + 4] as u64) << 8) | (self.bytes[self.reader_index + 5] as u64);
+            let xl = ((self.bytes[self.reader_index + 2] as u64) << 24)
+                | ((self.bytes[self.reader_index + 3] as u64) << 16)
+                | ((self.bytes[self.reader_index + 4] as u64) << 8)
+                | (self.bytes[self.reader_index + 5] as u64);
             let xh = (((h & 0x03) as u64) << 8) | (self.bytes[self.reader_index + 1] as u64);
             self.reader_index += 6;
             return (xh << 32) | xl;
         }
         if h < 0xfe {
             self.ensure_read(7);
-            let xl = ((self.bytes[self.reader_index + 3] as u64) << 24) | ((self.bytes[self.reader_index + 4] as u64) << 16) | ((self.bytes[self.reader_index + 5] as u64) << 8) | (self.bytes[self.reader_index + 6] as u64);
-            let xh = (((h & 0x01) as u64) << 16) | ((self.bytes[self.reader_index + 1] as u64) << 8) | (self.bytes[self.reader_index + 1] as u64);
+            let xl = ((self.bytes[self.reader_index + 3] as u64) << 24)
+                | ((self.bytes[self.reader_index + 4] as u64) << 16)
+                | ((self.bytes[self.reader_index + 5] as u64) << 8)
+                | (self.bytes[self.reader_index + 6] as u64);
+            let xh = (((h & 0x01) as u64) << 16)
+                | ((self.bytes[self.reader_index + 1] as u64) << 8)
+                | (self.bytes[self.reader_index + 1] as u64);
             self.reader_index += 7;
             return (xh << 32) | xl;
         }
         if h < 0xff {
             self.ensure_read(8);
-            let xl = ((self.bytes[self.reader_index + 4] as u64) << 24) | ((self.bytes[self.reader_index + 5] as u64) << 16) | ((self.bytes[self.reader_index + 6] as u64) << 8) | (self.bytes[self.reader_index + 7] as u64);
-            let xh = ((self.bytes[self.reader_index + 1] as u64) << 16) | ((self.bytes[self.reader_index + 2] as u64) << 8) | (self.bytes[self.reader_index + 3] as u64);
+            let xl = ((self.bytes[self.reader_index + 4] as u64) << 24)
+                | ((self.bytes[self.reader_index + 5] as u64) << 16)
+                | ((self.bytes[self.reader_index + 6] as u64) << 8)
+                | (self.bytes[self.reader_index + 7] as u64);
+            let xh = ((self.bytes[self.reader_index + 1] as u64) << 16)
+                | ((self.bytes[self.reader_index + 2] as u64) << 8)
+                | (self.bytes[self.reader_index + 3] as u64);
             self.reader_index += 8;
             return (xh << 32) | xl;
         } else {
             self.ensure_read(9);
-            let xl = ((self.bytes[self.reader_index + 5] as u64) << 24) | ((self.bytes[self.reader_index + 6] as u64) << 16) | ((self.bytes[self.reader_index + 7] as u64) << 8) | (self.bytes[self.reader_index + 8] as u64);
-            let xh = ((self.bytes[self.reader_index + 1] as u64) << 24) | ((self.bytes[self.reader_index + 2] as u64) << 16) | ((self.bytes[self.reader_index + 3] as u64) << 8) | (self.bytes[self.reader_index + 4] as u64);
+            let xl = ((self.bytes[self.reader_index + 5] as u64) << 24)
+                | ((self.bytes[self.reader_index + 6] as u64) << 16)
+                | ((self.bytes[self.reader_index + 7] as u64) << 8)
+                | (self.bytes[self.reader_index + 8] as u64);
+            let xh = ((self.bytes[self.reader_index + 1] as u64) << 24)
+                | ((self.bytes[self.reader_index + 2] as u64) << 16)
+                | ((self.bytes[self.reader_index + 3] as u64) << 8)
+                | (self.bytes[self.reader_index + 4] as u64);
             self.reader_index += 9;
             return (xh << 32) | xl;
         }
@@ -214,30 +245,12 @@ impl ByteBuf {
         "".to_string()
     }
     //region internal
-
-    fn prop_size(init_size: usize, need_size: usize) -> usize {
-        let mut i = usize::max(init_size, Self::MIN_CAPACITY);
-        loop {
-            if i >= need_size {
-                return i;
-            }
-
-            i <<= 1;
-        }
-    }
-
     #[inline]
     fn ensure_read(&self, size: usize) {
         if self.reader_index + size > self.writer_index {
             panic!("Not enough data")
         }
     }
-
-    #[inline]
-    fn can_read(&self, size: usize) -> bool {
-        self.reader_index + size <= self.writer_index
-    }
-
     //endregion
 }
 

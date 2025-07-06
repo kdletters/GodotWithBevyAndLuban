@@ -6,35 +6,17 @@
 deck_1 = NodePath("CanvasLayer/Control2/Deck")
 deck_2 = NodePath("CanvasLayer/Control2/Deck2")
 deck_3 = NodePath("CanvasLayer/Control2/Deck3")
-scene_dis_name = "我是傻逼"
-max_random_item_num = 5
-min_random_item_num = 2
-site_items = {
-"Cobalt": 100,
-"Cobalt_ore": 100,
-"Gold_ore": 100,
-"Ice": 100,
-"Iron": 100,
-"Iron_ore": 100,
-"Magnesium": 100,
-"Magnesium_ore": 100,
-"Nickel": 100,
-"Nickel_ore": 100,
-"Platinum_ore": 100,
-"Silicon": 100,
-"Silicon_ore": 100,
-"Silver_ore": 100,
-"Stone": 100,
-"Uranium_ore": 100
-}
+max_random_item_num = 1
+min_random_item_num = 3
 draw_button = NodePath("CanvasLayer/Button")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="Control2" type="VBoxContainer" parent="CanvasLayer"]
-layout_direction = 3
+layout_direction = 2
 anchors_preset = -1
-anchor_right = 0.8
+anchor_left = 0.2
+anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2

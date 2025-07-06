@@ -253,13 +253,13 @@ pub struct {{table.name}} {
     pub data_map: {{map_type}},
     {{~else if table.is_list_table ~}}
     pub data_list: Vec<{{value_type}}>,
-    {{~if table.is_union_index~}}    
+    {{~if table.is_union_index~}}
     pub data_map_union: {{table_union_map_type_name}},
     {{~else if !table.index_list.empty?~}}
     {{~for idx in table.index_list~}}
     pub data_map_{{idx.index_field.name}}: std::collections::HashMap<{{declaring_type_name idx.type}}, {{value_type}}>,
     {{~end~}}
-    {{~end~}}    
+    {{~end~}}
     {{~else~}}
     pub data: {{declaring_type_name table.value_ttype}},
     {{~end~}}
@@ -287,7 +287,7 @@ impl {{name}} {
     pub fn get(&self, key: &{{get_key_type key_type}}) -> Option<{{value_type}}> {
         self.data_map.get(key).map(|x| x.clone())
     }
-    
+
     {{get_ref_resolve}}
 }
 
@@ -324,7 +324,7 @@ impl {{name}} {
         }
     {{~end~}}
 
-    Ok(std::sync::Arc::new({{table.name}} { 
+    Ok(std::sync::Arc::new({{table.name}} {
             data_list,
 {{~if table.is_union_index~}}
             data_map_union,
@@ -336,7 +336,7 @@ impl {{name}} {
         }))
     }
     {{~if table.is_union_index~}}
-    
+
     pub fn get(&self, key: &({{array.each table.index_list @(get_key_type index_type_name) | array.join ', '}})) -> Option<{{value_type}}> {
         self.data_map_union.get(key).map(|x| x.clone())
     }
@@ -344,7 +344,7 @@ impl {{name}} {
     {{~for idx in table.index_list
         index = format_property_name __code_style idx.index_field.name
     ~}}
-    pub fn get_by_{{index}}(&self, key: &{{get_key_type (declaring_type_name idx.type)}}) -> Option<{{value_type}}> {
+    pub fn get_by_{{index}}(&self, key: &{{declaring_type_name idx.type}}) -> Option<{{value_type}}> {
         self.data_map_{{index}}.get(key).map(|x| x.clone())
     }
     {{~end~}}

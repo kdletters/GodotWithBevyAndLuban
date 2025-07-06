@@ -25,6 +25,10 @@ UI="*res://ui.tscn"
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/asdasd/plugin.cfg")
+
 [global_group]
 
 CardDroppable="可放置卡牌"

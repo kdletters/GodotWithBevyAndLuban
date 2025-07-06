@@ -1,9 +1,6 @@
-use crate::deck::Deck;
+use crate::standard::deck::Deck;
 use crate::translate::Localize;
-use crate::{data, lang};
-use godot::classes::{
-    Button, Control, FileAccess, IControl, Label, ResourceLoader, Texture, Texture2D, TextureRect,
-};
+use godot::classes::{Button, Control, IControl, Label, Texture2D, TextureRect};
 use godot::prelude::*;
 use std::sync::Arc;
 
@@ -43,27 +40,28 @@ impl Card {
     }
 
     fn draw_card(&mut self) {
-        if let Some(data) = &self.data {
+        if let Some(data) = self.data.clone() {
             let img = load::<Texture2D>(&data.base_icon);
             self.icon.set_texture(&img);
-            self.label.set_text(&lang!(&data.base_displayName));
+            self.label.set_text(&data.base_displayName.local());
         }
     }
 
-    fn follow(&mut self, target_position: Vector2, delta: f64) {
+    fn follow(&mut self, target_position: Vector2, delta: f32) {
         let displacement = target_position - self.base().get_global_position();
         let force = displacement * self.stiffness;
-        self.velocity += force * (delta as f32);
+        self.velocity += force * delta;
         self.velocity *= 1.0 - self.damping;
         let position = self.base().get_global_position();
         let velocity = self.velocity;
         self.base_mut()
-            .set_global_position(position + velocity * (delta as f32));
+            .set_global_position(position + velocity * delta);
     }
 
     fn on_button_down(&mut self) {
         self.card_current_state = CardState::Dragging;
 
+        self.base_mut().set_z_index(100);
         if let Some(follow_target) = &self.follow_target {
             follow_target.clone().queue_free();
         }
@@ -87,10 +85,14 @@ impl Card {
         }
 
         if let Some(deck) = in_which_deck {
-            deck.clone().bind_mut().add_card(self.base_mut().clone().cast::<Card>());
+            deck.clone()
+                .bind_mut()
+                .add_card(self.base_mut().clone().cast::<Card>());
         } else {
             if let Some(deck) = &self.pre_deck {
-                deck.clone().bind_mut().add_card(self.base_mut().clone().cast::<Card>());
+                deck.clone()
+                    .bind_mut()
+                    .add_card(self.base_mut().clone().cast::<Card>());
             }
         }
 
@@ -100,7 +102,7 @@ impl Card {
 
 #[godot_api]
 impl IControl for Card {
-    fn process(&mut self, delta: f64) {
+    fn process(&mut self, delta: f32) {
         match self.card_current_state {
             CardState::Following => {
                 if let Some(follow_target) = &self.follow_target {
