@@ -85,14 +85,10 @@ impl Card {
         }
 
         if let Some(deck) = in_which_deck {
-            deck.clone()
-                .bind_mut()
-                .add_card(self.base_mut().clone().cast::<Card>());
+            deck.clone().bind_mut().add_card_ref(self);
         } else {
             if let Some(deck) = &self.pre_deck {
-                deck.clone()
-                    .bind_mut()
-                    .add_card(self.base_mut().clone().cast::<Card>());
+                deck.clone().bind_mut().add_card_ref(self);
             }
         }
 
