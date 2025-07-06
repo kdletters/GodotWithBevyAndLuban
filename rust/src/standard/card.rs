@@ -121,17 +121,17 @@ impl IControl for Card {
         }
     }
 
-    fn ready(&mut self) {
-        self.pick_button
-            .signals()
-            .button_down()
-            .connect_other(&self.to_gd(), Card::on_button_down);
-
-        self.pick_button
-            .signals()
-            .button_up()
-            .connect_other(&self.to_gd(), Card::on_button_up);
-    }
+    // fn ready(&mut self) {
+    //     self.pick_button
+    //         .signals()
+    //         .button_down()
+    //         .connect_other(self, Card::on_button_down);
+    //
+    //     self.pick_button
+    //         .signals()
+    //         .button_up()
+    //         .connect_other(self, Card::on_button_up);
+    // }
 }
 
 #[derive(GodotConvert, Var, Export, Eq, PartialEq, Hash, Debug)]
