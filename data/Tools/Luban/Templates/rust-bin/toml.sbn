@@ -9,3 +9,9 @@ edition = "2021"
 bitflags = { version = "*" , features = ["serde"] }
 macros = { path = "../macros" }
 luban_lib = { path = "../luban_lib" }
+
+[lints.rust]
+warnings = "allow"
+dead_code = "allow"
+unused_variables = "allow"
+unused_imports = "allow"

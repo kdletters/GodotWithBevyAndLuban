@@ -6,6 +6,8 @@
 </auto-generated>
 */
 
+#![allow(warnings)]
+#![allow(clippy::all)]
 pub mod prelude {
     pub use crate::card::*;
     pub use crate::*;

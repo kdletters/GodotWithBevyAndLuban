@@ -10,3 +10,9 @@ bitflags = { version = "*" , features = ["serde"] }
 serde_json = "*"
 bitflags = { version = "2.5.x" , features = ["serde"]}
 macros = {path = "../macros"}
+
+[lints.rust]
+warnings = "allow"
+dead_code = "allow"
+unused_variables = "allow"
+unused_imports = "allow"
