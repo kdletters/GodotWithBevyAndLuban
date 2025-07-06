@@ -37,9 +37,6 @@ impl Deck {
     }
 
     pub fn add_card(&mut self, mut card: Gd<Card>) {
-        self.add_card_ref(&mut *card.bind_mut());
-    }
-    pub fn add_card_ref(&mut self, card: &mut Card) {
         let mouse_position = self.base().get_global_mouse_position();
         godot_print!("添加卡牌到牌组: 鼠标位置: {:?}", mouse_position);
 
@@ -81,20 +78,21 @@ impl Deck {
         self.card_poi_deck.move_child(&card_bg, insert_index);
         godot_print!("  移动卡牌背景到索引位置: {}", insert_index);
 
-        let global_poi = card.base().get_global_position();
+        let global_poi = card.get_global_position();
         godot_print!("  卡牌全局位置: ({}, {})", global_poi.x, global_poi.y);
 
-        if let Some(mut parent) = card.base().get_parent() {
+        if let Some(mut parent) = card.get_parent() {
             godot_print!("  从原父节点移除卡牌");
-            parent.remove_child(&card.to_gd());
+            parent.remove_child(&card);
         }
 
-        self.card_deck.add_child(&card.to_gd());
+        self.card_deck.add_child(&card);
         godot_print!("  将卡牌添加到卡牌牌组");
 
-        card.base_mut().set_global_position(global_poi);
+        card.set_global_position(global_poi);
         godot_print!("  设置卡牌全局位置: ({}, {})", global_poi.x, global_poi.y);
 
+        let mut card = card.bind_mut();
         card.follow_target = Some(card_bg);
         card.pre_deck = Some(self.to_gd());
         card.card_current_state = CardState::Following;
