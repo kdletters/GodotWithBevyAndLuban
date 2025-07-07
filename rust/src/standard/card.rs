@@ -35,8 +35,6 @@ impl Card {
     pub fn init_data(&mut self, data: Arc<cfg::card::CardsInfo>) {
         self.data = Some(data);
         self.card_current_state = CardState::Following;
-
-        self.draw_card();
     }
 
     fn draw_card(&mut self) {
@@ -85,14 +83,10 @@ impl Card {
         }
 
         if let Some(deck) = in_which_deck {
-            deck.clone()
-                .bind_mut()
-                .add_card(self.base_mut().clone().cast::<Card>());
+            deck.clone().bind_mut().add_card(self.to_gd());
         } else {
             if let Some(deck) = &self.pre_deck {
-                deck.clone()
-                    .bind_mut()
-                    .add_card(self.base_mut().clone().cast::<Card>());
+                deck.clone().bind_mut().add_card(self.to_gd());
             }
         }
 
@@ -131,6 +125,8 @@ impl IControl for Card {
             .signals()
             .button_up()
             .connect_other(self, Card::on_button_up);
+
+        self.draw_card();
     }
 }
 

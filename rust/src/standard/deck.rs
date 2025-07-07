@@ -14,6 +14,8 @@ pub struct Deck {
     #[init(load = "res://card/card_background.tscn")]
     card_bg_scene: OnReady<Gd<PackedScene>>,
 
+    card_wait_to_add: Vec<Gd<Card>>,
+
     base: Base<Panel>,
 }
 
@@ -36,7 +38,11 @@ impl Deck {
         b_x.total_cmp(a_x)
     }
 
-    pub fn add_card(&mut self, mut card: Gd<Card>) {
+    pub fn add_card(&mut self, card: Gd<Card>) {
+        self.card_wait_to_add.push(card);
+    }
+
+    pub fn add_card_internal(&mut self, mut card: Gd<Card>) {
         let mouse_position = self.base().get_global_mouse_position();
         godot_print!("添加卡牌到牌组: 鼠标位置: {:?}", mouse_position);
 
@@ -103,6 +109,12 @@ impl Deck {
 #[godot_api]
 impl IPanel for Deck {
     fn process(&mut self, _delta: f32) {
+        if self.card_wait_to_add.len() > 0 {
+            for card in self.card_wait_to_add.drain(..).collect::<Vec<_>>() {
+                self.add_card_internal(card);
+            }
+        }
+
         if self.card_deck.get_child_count() != 0 {
             let children = self.card_deck.get_children();
             let children = children
